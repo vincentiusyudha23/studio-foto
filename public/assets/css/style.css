@@ -1,0 +1,70 @@
+:root {
+    --bs-primary: #b39ddb;
+    --bs-primary-dark: #8675a4;
+    --bs-primdark: #5e5274;
+    --bs-primary-rgb: 179, 157, 219;
+}
+
+.text-primdark{
+    color: var(--bs-primdark) !important;
+}
+
+.form-control:focus{
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.btn-primary {
+    background-color: var(--bs-primary) !important;
+    border: none;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:visited,
+.btn-primary.active{
+    background-color: var(--bs-primary-dark) !important;
+}
+
+.img-card{
+    width: 200px !important;
+    height: 200px !important;
+    /* overflow: hidden; */
+    position: relative;
+}
+
+.img-card:hover{
+    cursor: pointer;
+}
+
+.img-card a>img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.img-title span {
+    flex: 1; /* isi sisa space */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: white;
+    font-size: small;
+}
+
+.img-card .img-title{
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.img-card .img-title .dropend{
+    z-index: 1050 !important;
+}
