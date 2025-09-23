@@ -46,6 +46,7 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/dashboard', 'dashboard')->name('dashboard');
         Route::get('/landing-page', 'landing_page')->name('landing-page');
         Route::get('/galeri', 'galeri')->name('galeri');
+        Route::get('/client', 'client')->name('client');
         Route::get('/pemesanan', 'pemesanan')->name('pemesanan');
     });
 

@@ -18,7 +18,6 @@
         <style>
             *{
                 font-family: 'Segoe UI', sans-serif;
-                color: #333;
             }
             body{
                 width: 100%;

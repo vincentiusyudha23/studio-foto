@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Pemesanan extends Model
 {
@@ -16,10 +18,16 @@ class Pemesanan extends Model
         'email',
         'tanggal_pelaksanaan',
         'user_id',
-        'tipe_paket'
+        'tipe_paket',
+        'metadata'
     ];
 
     protected $casts = [
         'tanggal_pelaksanaan' => 'date'
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

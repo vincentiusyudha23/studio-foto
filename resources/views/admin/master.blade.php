@@ -108,8 +108,8 @@
                 <a href="{{ route('admin.galeri') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.galeri') ? 'active' : '' }}">
                    <i class="las la-images fs-5"></i> Galeri
                 </a>
-                <a href="{{ route('admin.galeri') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.galeri') ? 'active' : '' }}">
-                   <i class="las la-images fs-5"></i> Klien
+                <a href="{{ route('admin.client') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.client') ? 'active' : '' }}">
+                   <i class="las la-user fs-5"></i> Klien
                 </a>
                 <a href="{{ route('admin.pemesanan') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.pemesanan') ? 'active' : '' }}">
                    <i class="las la-envelope fs-5"></i> Pemesanan

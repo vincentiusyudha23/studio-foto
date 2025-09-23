@@ -23,7 +23,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="nama">Nama</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" name="nama" required id="nama" value="{{ $user->nama_depan . ' ' . ($user->nama_belakang ?? '') }}">
+                            <input type="text" class="form-control" name="nama" required id="nama" value="{{ $user->full_name }}">
                         </div>
                     </div>
                     <div class="mb-3">

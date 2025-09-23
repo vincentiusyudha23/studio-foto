@@ -62,6 +62,11 @@ class AdminController extends Controller
         return view('admin.galeri.index');
     }
 
+    public function client()
+    {
+        return view('admin.client.index');
+    }
+
     public function pemesanan()
     {
         $pemesanan = Pemesanan::latest()->get();
