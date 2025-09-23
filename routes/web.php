@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\GalleryPage;
 use App\Livewire\LandingPage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
@@ -49,5 +50,6 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
     });
 
     Route::post('/upload-foto-lp', [LandingPage::class, 'uploadImage'])->name('upload-foto-lp');
+    Route::post('/upload-foto-gl', [GalleryPage::class, 'uploadImage'])->name('upload-foto-gl');
 });
 

@@ -98,7 +98,7 @@
                 const $this = this;
                 const wire = $wire;
                 this.dropzoneTag = new Dropzone(element, {
-                    url: '{{ route("admin.upload-foto-lp") }}',
+                    url: '{{ route("admin.upload-foto-gl") }}',
                     paramName: 'images',
                     maxFiles: 10,
                     uploadMultiple: true,

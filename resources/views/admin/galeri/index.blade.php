@@ -4,6 +4,6 @@
 
 @section('content')
     <div class="p-2">
-        Galeri Page
+        <livewire:gallery-page lazy="true"/>
     </div>
 @endsection

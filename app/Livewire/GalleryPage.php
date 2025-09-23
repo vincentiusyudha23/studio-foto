@@ -4,13 +4,13 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\On;
-use App\Models\LandingPages;
+use App\Models\GalleryPages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
-class LandingPage extends Component
+class GalleryPage extends Component
 {
     public $images = [];
     public $uploadedUrl;
@@ -26,7 +26,7 @@ class LandingPage extends Component
 
     public function loadImage()
     {
-        $this->images = LandingPages::latest()->get()->toArray();
+        $this->images = GalleryPages::latest()->get()->toArray();
     }
 
     public function imagesUpdate()
@@ -50,10 +50,10 @@ class LandingPage extends Component
             ], 422);
         }
 
-        if(LandingPages::all()->count() >= 10){
+        if(GalleryPages::all()->count() >= 20){
             return response()->json([
                 'type' => 'error',
-                'msg' => 'Foto untuk landing page sudah melebihi maksimal, sebanyak 10 Foto'
+                'msg' => 'Foto untuk galleri page sudah melebihi maksimal, sebanyak 20 Foto'
             ], 422);
         }
 
@@ -61,10 +61,10 @@ class LandingPage extends Component
             if($request->images){
                 foreach ($request->images as $image) {
                     $cloud = Cloudinary::upload($image->getRealPath(), [
-                        'folder' => 'landing-page'
+                        'folder' => 'galeri-page'
                     ]);
         
-                    LandingPages::create([
+                    GalleryPages::create([
                         'public_id' => $cloud->getPublicId(),
                         'title' => $image->getClientOriginalName(),
                         'image' => $cloud->getSecurePath()
@@ -88,7 +88,7 @@ class LandingPage extends Component
 
     public function deleteImage($id)
     {
-        $image = landingPages::find($id);
+        $image = GalleryPages::find($id);
 
         Cloudinary::destroy($image->public_id);
 
@@ -99,7 +99,7 @@ class LandingPage extends Component
 
     public function download($id)
     {
-        $image = LandingPages::find($id);
+        $image = GalleryPages::find($id);
 
         return response()->streamDownload(function() use ($image){
             echo file_get_contents($image->image);
@@ -113,6 +113,6 @@ class LandingPage extends Component
 
     public function render()
     {
-        return view('livewire.landing-page');
+        return view('livewire.gallery-page');
     }
 }
