@@ -41,7 +41,7 @@
         }
         .about-us{
             width: 100%;
-            min-height: 100dvh;
+            min-height: 80dvh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -69,11 +69,48 @@
         .card-pricelist:hover{
             transform: scale(1.1);
         }
+
+        #my-gallery{
+            width: 100%;
+            height: 100dvh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .gallery-page{cursor: pointer;}
+        .gallery-card{
+            transition: all 0.6s ease;
+            overflow: visible;
+        }
+
+        .gallery-page .gallery__list:hover .gallery-card{
+            filter: blur(2px);
+            opacity: 0.4;
+        }
+
+        .gallery-page .gallery__slide:hover .gallery-card{
+            filter: blur(0);
+            opacity: 1;
+            border-color: white !important;
+        }
+        
+        .gallery-page .gallery__slide:hover .gallery-card>img{
+            border: 2px solid white;
+        }
+
+        .gallery-card>img{
+            width: 100%;
+            max-height: 50dvh;
+            max-width: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: all 0.3s ease;
+        }
     </style>
 @endsection
 
 @section('content')
-    <section>
+    <section class="w-100">
         {{-- Home Section --}}
         <div class="w-100 text-center d-flex flex-column gap-3 mt-5">
             <h1 class="text-uppercase fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Selamat Datang di Vendor Photography Aster Visualism</h1>
@@ -82,10 +119,10 @@
         <div class="splide mt-5 photos-landpage" id="slider-landing-page">
             <div class="splide__track">
                 <ul class="splide__list">
-                    @foreach ($photos ?? [] as $item)
+                    @foreach ($photos as $item)
                         <li class="splide__slide">
                             <div class="photos-card">
-                                <img src="{{ $item }}" alt="img">
+                                <img src="https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/{{ $item->public_id }}" alt="img">
                             </div>
                         </li>
                     @endforeach
@@ -105,6 +142,28 @@
                     Hubungi kami untuk info lebih lanjut dan jadwalkan sesi foto Anda!
                 </p>
             </div>
+        </div>
+
+        {{-- Foto-foto Terbaik  --}}
+        <div class="my-gallery" id="my-gallery">
+            <div class="w-100 text-center mb-2">
+                <h1 class="fw-bold text-white">Foto-foto Terbaik Kami</h1>
+            </div>
+            
+            <div class="gallery-page">
+                <div class="gallery__track">
+                    <div class="row gallery__list">
+                        @foreach ($myGallery as $item)
+                            <div class="gallery__slide col-12 col-sm-6 col-md-4 col-lg-3 p-0">
+                                <a href="{{ $item->image }}" target="_blank" class="w-100 h-100 gallery-card">
+                                    <img src="https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/{{ $item->public_id }}" lazy="true">
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         {{-- Pricelist Section --}}

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Foto;
 use App\Models\User;
 use App\Models\Pemesanan;
+use App\Models\GalleryPages;
+use App\Models\LandingPages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -15,27 +17,11 @@ class MainController extends Controller
 {
     public function landing_page()
     {
-        $photos = [
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596408/lp_20_isspkl.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596408/lp_21_lc3rrf.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596400/lp_17_ca2syr.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596399/lp_16_p5gbac.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596393/lp_18_wafbkf.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596393/lp_19_osffwm.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596386/lp_14_siqmah.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596384/lp_13_x8avk8.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596380/lp_15_sbjwkq.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596370/lp_3_gk7k1v.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596369/lp_6_m9uwv4.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596367/lp_9_uv4azr.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596364/lp_4_xvnwbc.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596359/lp_2_qlvir2.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596354/lp_8_uacvq7.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596348/lp_7_fc6eow.jpg',
-            'https://res.cloudinary.com/dm2rzwrph/image/upload/w_500,c_fill,g_auto,q_auto,f_webp/v1754596169/lp_1_fkuopf.jpg'
-        ];
+        $photos = LandingPages::all();
 
-        return view('welcome', compact('photos'));
+        $myGallery = GalleryPages::all();
+
+        return view('welcome', compact('photos', 'myGallery'));
     }
 
     public function detail_pricelist()

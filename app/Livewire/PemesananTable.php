@@ -10,10 +10,12 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 class PemesananTable extends DataTableComponent
 {
     public ?int $userId = null;
+    public ?int $limit = null;
 
-    public function mount($userId = null)
+    public function mount($userId = null, $limit = null)
     {
         $this->userId = $userId;
+        $this->limit = $limit;
     }
 
     public function configure(): void
@@ -22,13 +24,19 @@ class PemesananTable extends DataTableComponent
             ->setColumnSelectDisabled()
             ->setEmptyMessage('Tidak ada data')
             ->setSearchEnabled();
+            
+        if($this->limit){
+            $this->setPaginationDisabled();
+        }
     }
 
     public function builder(): Builder
     {
         return Pemesanan::query()
             ->when($this->userId, fn($q) => $q->where('user_id', $this->userId))
-            ->with('user')->latest();
+            ->with('user')
+            ->latest()
+            ->when($this->limit, fn($q) => $q->limit($this->limit));
     }
 
     public function columns(): array
