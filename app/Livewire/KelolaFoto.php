@@ -12,13 +12,15 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 class KelolaFoto extends Component
 {
     public $pesanan_id;
+    public $bookingId;
     public $images = [];
 
     protected $listeners = ['refreshImages' => '$refresh'];
 
-    public function mount($pemesanan_id)
+    public function mount($pemesanan_id, $booking_id)
     {
         $this->pesanan_id = $pemesanan_id;
+        $this->bookingId = $booking_id;
         $this->loadImage();
     }
 

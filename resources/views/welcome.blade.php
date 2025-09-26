@@ -145,10 +145,10 @@
         </div>
 
         {{-- Foto-foto Terbaik  --}}
+        <div class="w-100 text-center mb-4">
+            <h1 class="text-uppercase fw-bold text-white" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">FOTO FOTO TERBAIK KAMI</h1>
+        </div>
         <div class="my-gallery" id="my-gallery">
-            <div class="w-100 text-center mb-2">
-                <h1 class="fw-bold text-white">Foto-foto Terbaik Kami</h1>
-            </div>
             
             <div class="gallery-page">
                 <div class="gallery__track">

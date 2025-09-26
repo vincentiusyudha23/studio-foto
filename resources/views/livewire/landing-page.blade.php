@@ -1,7 +1,10 @@
-<div class="w-100 card" x-data="landingPage">
+<div class="w-100 card shadow-sm" x-data="landingPage">
     <style>
         #lp__upload-image .modal-body{
-            height: 70dvh;
+            height: 60dvh; /* Diperkecil sedikit agar tombol tidak ketutup */
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
         }
 
         #lp__upload-image .dropzone{
@@ -14,62 +17,250 @@
             align-items: center;
             justify-content: center; 
             flex-wrap: wrap;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+        
+        #lp__upload-image .dropzone:hover {
+            border-color: #0d6efd !important;
+            background-color: #f8f9fa;
+        }
+        
+        #lp__upload-image .dropzone .dz-message {
+            text-align: center;
+            margin: 0;
+        }
+        
+        #lp__upload-image .modal-content {
+            min-height: 70vh; /* Memastikan modal cukup tinggi */
+        }
+        
+        #lp__upload-image .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+        
+        .img-card {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .img-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+        }
+        
+        .img-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .img-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .img-title {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .img-card:hover .img-title {
+            background-color: #e9ecef;
+        }
+
+        .img-card:hover .img-title>span{
+            color: black;
+        }
+        
+        .img-title span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+        }
+        
+        .empty-state {
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .img-card {
+                width: 150px;
+                height: 180px;
+            }
+            
+            .img-card img {
+                height: 140px;
+            }
+            
+            .img-title {
+                font-size: 0.8rem;
+            }
+            
+            #lp__upload-image .modal-body {
+                height: 50dvh; /* Lebih kecil di mobile */
+                padding: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .img-card {
+                width: 100%;
+                max-width: 250px;
+                height: auto;
+            }
+            
+            .d-flex.flex-wrap {
+                justify-content: center !important;
+            }
+            
+            #lp__upload-image .modal-dialog {
+                margin: 0.5rem;
+            }
         }
     </style>
-    <div class="card-body" wire:loading.remove wire:target="loadImage">
-        <div class="d-flex justify-content-end px-1 mb-3">
-            <button class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-1" data-bs-toggle="modal" data-bs-target="#lp__upload-image">
-                <i class="las la-plus text-white fw-semibold fs-5"></i>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" wire:loading.flex wire:target="loadImage,deleteImage,download">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    
+    <div class="card-header bg-white py-3">
+        <h5 class="card-title mb-0 fw-semibold text-primary">
+            <i class="las la-images me-2"></i>Kelola Foto Landing Page
+        </h5>
+    </div>
+    
+    <div class="card-body" wire:loading.remove wire:target="loadImage,deleteImage,download">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <p class="text-muted mb-0">Total Foto: <span class="fw-semibold">{{ count($images ?? []) }}</span></p>
+            </div>
+            <button class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#lp__upload-image">
+                <i class="las la-plus-circle text-white fw-semibold fs-5"></i>
                 Tambah Foto
             </button>
         </div>
 
-        <div class="d-flex flex-wrap gap-3">
-            @if (count($images ?? []) > 0)
+        @if (count($images ?? []) > 0)
+            <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3">
                 @foreach ($images as $image)
-                    <div class="img-card m-1 shadow-sm border rounded">
-                        <a href="{{ data_get($image, 'image') ?? '#' }}" class="w-100 h-100">
+                    <div class="img-card m-1 shadow-sm border">
+                        <a href="{{ data_get($image, 'image') ?? '#' }}" class="w-100 h-100 d-block" target="_blank">
                             <img src="{{ getThumbnail(data_get($image, 'public_id')) }}" alt="image" loading="lazy">
                         </a>
 
-                        <div class="w-100 img-title py-2 px-1 rounded-bottom">
-                            <span>{{ data_get($image, 'title') ?? '' }}</span>
+                        <div class="w-100 img-title py-2 px-2">
+                            <span class="fw-medium" title="{{ data_get($image, 'title') ?? '' }}">{{ data_get($image, 'title') ?? 'Untitled' }}</span>
 
-                            <div class="dropend">
-                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="las la-ellipsis-v fs-6"></i>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ $image['image'] }}" target="_blank">Lihat</a></li>
-                                    <li><a class="dropdown-item" href="#" wire:click.prevent="download({{ $image['id'] }})">Download</a></li>
-                                    <li><a class="dropdown-item" href="#" wire:click.prevent="deleteImage({{ $image['id'] }})">Hapus</a></li>
+                                <ul class="dropdown-menu shadow">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ $image['image'] }}" target="_blank">
+                                            <i class="las la-eye"></i> Lihat
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="#" wire:click.prevent="download({{ $image['id'] }})">
+                                            <i class="las la-download"></i> Download
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" wire:click.prevent="deleteImage({{ $image['id'] }})">
+                                            <i class="las la-trash"></i> Hapus
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 @endforeach
-            @else
-                <div class="d-flex justify-content-center align-items-center w-100" style="height: 300px;">
-                    <h5 class="fw-semibold opacity-50">Belum Ada Foto!</h5>
-                </div>
-            @endif
-        </div>
+            </div>
+        @else
+            <div class="empty-state">
+                <i class="las la-images"></i>
+                <h5 class="fw-semibold">Belum Ada Foto!</h5>
+                <p class="text-center">Klik tombol "Tambah Foto" untuk mengunggah foto pertama Anda.</p>
+            </div>
+        @endif
     </div>
 
+    <!-- Modal Upload -->
     <div class="modal fade" tabindex="-1" id="lp__upload-image">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Unggah Foto</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title d-flex align-items-center gap-2">
+                        <i class="las la-cloud-upload-alt"></i> Unggah Foto
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
-                    <div class="dropzone" id="dropzone__lp"></div>
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">Format yang didukung: JPG, PNG, GIF</p>
+                        <p class="text-muted mb-0">Maksimal ukuran file: 10MB per foto</p>
+                    </div>
+                    <div class="dropzone flex-grow-1" id="dropzone__lp">
+                        <div class="dz-message needsclick d-flex flex-column justify-content-center align-items-center h-100">
+                            <i class="las la-cloud-upload-alt display-4 text-muted mb-3"></i>
+                            <h5 class="text-muted">Seret file ke sini atau klik untuk memilih</h5>
+                            <span class="text-muted">Unggah hingga 10 foto sekaligus</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" x-ref="uploadBtn" x-on:click="processUpload" class="btn btn-primary w-100">Unggah</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" x-ref="uploadBtn" x-on:click="processUpload" class="btn btn-primary d-flex align-items-center gap-2">
+                        <i class="las la-upload"></i> Unggah
+                    </button>
                 </div>
             </div>
         </div>
@@ -78,16 +269,14 @@
 
 @script
     <script>
+        // Kode JavaScript tetap sama seperti sebelumnya
         Alpine.data('landingPage', () => ({
             dropzoneTag: null,
             async processUpload(){
-                // await @this.call('loadImage');
                 if(this.dropzoneTag == null) return;
-
                 this.dropzoneTag.processQueue();
             },
             initializeDropzone(){
-
                 let element = document.querySelector("#dropzone__lp");
 
                 if (element.dropzone) {
@@ -114,6 +303,20 @@
                         $this.$refs.uploadBtn.disabled = true;
                     },
                     init: function(){
+                        const dzMessage = document.querySelector('.dz-message');
+                        
+                        this.on("addedfile", function(file) {
+                            if (dzMessage) {
+                                dzMessage.classList.add('d-none');
+                            }
+                        });
+
+                        this.on("removedfile", function(file) {
+                            if (this.files.length === 0 && dzMessage) {
+                                dzMessage.classList.remove('d-none');
+                            }
+                        });
+
                         this.on("maxfilesexceeded", function(file) {
                             Swal.fire({
                                 icon: 'warning',
@@ -130,11 +333,8 @@
                     success: function (file, response) {
                         if(response.type == 'success'){
                             $this.$refs.uploadBtn.disabled = false;
-
                             toastr.success(response.msg);
-
                             $this.updateImages();
-
                             this.removeFile(file);
                         }
                     },
@@ -170,18 +370,14 @@
                 });
             },
             async updateImages(){
-                
                 await @this.call('loadImage');
-
                 const modal = bootstrap.Modal.getInstance(document.getElementById('lp__upload-image'));
-
                 if (modal) {
                     modal.hide();
                 }
             },
             init(){
                 Dropzone.autoDiscover = false;
-
                 this.$nextTick(() => {
                     this.initializeDropzone();
                 });
