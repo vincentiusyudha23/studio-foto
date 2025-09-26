@@ -111,8 +111,18 @@
                 <a href="{{ route('admin.client') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.client') ? 'active' : '' }}">
                    <i class="las la-user fs-5"></i> Klien
                 </a>
-                <a href="{{ route('admin.pemesanan') }}" class="sidebar-menu-item shadow-sm fw-semibold {{ request()->routeIs('admin.pemesanan') ? 'active' : '' }}">
+                <a href="{{ route('admin.pemesanan') }}" class="sidebar-menu-item shadow-sm fw-semibold position-relative {{ request()->routeIs('admin.pemesanan') ? 'active' : '' }}">
                    <i class="las la-envelope fs-5"></i> Pemesanan
+                    @php
+                        $pesanan = \App\Models\Pemesanan::where('dilihat', 0)->count();
+                    @endphp
+
+                    @if ($pesanan > 0)
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ $pesanan }}
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                    @endif
                 </a>
             </div>
         </div>

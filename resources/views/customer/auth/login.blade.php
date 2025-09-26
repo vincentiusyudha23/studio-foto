@@ -24,8 +24,12 @@
                             <input type="password" class="form-control" id="password" name="password">
                         </div>
                     </div>
-                    <div class="pt-2">
+                    <div class="pt-2 mb-2">
                         <button class="btn btn-primary w-100 fw-semibold" type="submit">Sign In</button>
+                    </div>
+
+                    <div class="w-100 text-center">
+                        Belum Punya Akun? <a class="text-primary" href="{{ route('customer.register') }}">Daftar</a>
                     </div>
                 </form>
             </div>

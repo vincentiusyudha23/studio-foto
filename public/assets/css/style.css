@@ -11,7 +11,12 @@
 
 .form-control:focus{
     border-color: var(--bs-primary);
-    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    box-shadow: none;
+}
+
+.form-select:focus{
+    border-color: var(--bs-primary);
+    box-shadow: none;
 }
 
 .btn-primary {
@@ -67,4 +72,9 @@
 
 .img-card .img-title .dropend{
     z-index: 1050 !important;
+}
+
+.required::after {
+    content: "*";
+    color: red;
 }

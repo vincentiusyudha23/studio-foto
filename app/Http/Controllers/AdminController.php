@@ -72,4 +72,23 @@ class AdminController extends Controller
         $pemesanan = Pemesanan::latest()->get();
         return view('admin.pemesanan.index', compact('pemesanan'));
     }
+
+    public function pemesanan_view($id)
+    {
+        $pemesanan = Pemesanan::findOrFail($id);
+
+        if($pemesanan->dilihat == 0){
+            $pemesanan->dilihat = 1;
+            $pemesanan->save();
+        }
+        
+        return view('admin.pemesanan.pesanan-view', compact('pemesanan'));
+    }
+
+    public function kelola_foto_pesanan($id)
+    {
+        $pemesanan = Pemesanan::findOrFail($id);
+
+        return view('admin.pemesanan.kelola-foto', compact('pemesanan'));
+    }
 }

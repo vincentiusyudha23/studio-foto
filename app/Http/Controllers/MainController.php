@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class MainController extends Controller
 {
@@ -119,36 +120,89 @@ class MainController extends Controller
 
     public function pemesanan()
     {
-        return view('customer.pemesanan');
+        $description = '
+            <p>Mohon untuk dibaca dan dipahami. jika ada yang kurang dipahami, silahkan hubungi admin.</p>
+
+            <ul>
+                <li>Janji pertemuan secara langsung hanya dapat dilakukan setelah melakukan konfirmasi terlebih dahulu.</li>
+                <li>Pembayaran dapat dilakukan melalui COD atau transfer atas nama yang diberikan oleh admin aster visualism.</li>
+                <li>Penambahan lokasi, jam, dan wisudawan diluar perjanjian dikenakan biaya tambahan. info detail hubungi admin.</li>
+                <li>Jika terdapat biaya pada lokasi pemotretan, maka biaya tersebut ditanggung oleh client.</li>
+                <li>Booking = Pengisian form dan dengan pembayaran dp.</li>
+                <li>Pembayaran hanya dilakukan 1x yaitu sebelum/setelah pemotretan selesai dilakukan. (untuk jasa foto & Video)</li>
+                <li>Pembayaran hanya dilakukan 1x yaitu setelah Make-up selesai dilakukan. (untuk jasa make-up)</li>
+                <li>Pembatalan sepihak dari client tanpa alasan yang jelas akan di viralkan melalui media sosial kami dan client tidak berhak untuk menuntut kembali dalam bentuk apapun kepada pihak yang berwajib.</li>
+                <li>Pembatalan sepihak dari client tanpa alasan yang jelas yang telah melakukan pembayaran tidak akan di viralkan namun dp hangus.</i>
+                <li>Pembatalan dari client dengan alasan yang jelas hanya dapat dilakukan paling lambat h-3 dari jadwal yang disepakati. (kecuali kematian, kecelakaan atau musibah besar)</li>
+                <li>Pembatalan sepihak dari vendor dengan atau tanpa alasan yang jelas dp dikembalikan 2x lipat dan pihak yang dirugikan berhak mem-viralkan vendor. Vendor tidak berhak untuk menuntut kembali dalam bentuk apapun kepada pihak yang berwajib. (kecuali kematian, kecelakaan atau musibah besar)</li>
+                <li>Pemotretan hanya berlaku outdoor.</li>
+                <li>Info lainnya silahkan hubungi admin di nomor yang tertera.</li>
+                <li>Booking = membaca, memahami dan menyetujui seluruh s&k yang berlaku.</li>
+            </ul>
+            
+            <p>
+                Jangan lupa follow ig dan tiktok Aster Visualism di @aster.visualism <br>
+                Contact us on : 0896 0806 9631 - Aster Visualism
+            </p>
+        ';
+        return view('customer.pemesanan', compact('description'));
     }
 
     public function store_pemesanan(Request $request)
     {
-        $request->validate([
-            'email' => 'required',
-            'nama' => 'required',
+        $validate = $request->validate([
+            'nama_lengkap' => 'required',
             'no_hp' => 'required',
-            'tipe_paket' => 'required',
-            'tanggal' => 'required'
+            'instagram' => 'required',
+            'gelar' => 'nullable',
+            'univ' => 'required',
+            'tgl_potret' => 'required',
+            'jam_potret' => 'required',
+            'lokasi' => 'required',
+            'link_lokasi' => 'required',
+            'jasa_jasa' => 'required|array',
+            'paket' => 'required',
+            'info_paket_pilihan' => 'required',
+            'term_condition' => 'required',
+            'pembayaran' => 'required',
+            'bukti_tf' => 'required_if:pembayaran,1,2,3',
         ]);
 
         try{
             DB::beginTransaction();
 
+            $user = auth()->user();
+
+            if($request->has('bukti_tf')){
+                $image = $request->bukti_tf;
+                $cloud = Cloudinary::upload($image->getRealPath(), [
+                    'folder' => 'Bukti Transfer'
+                ]);
+
+                $validate['bukti_tf'] = $cloud->getSecurePath();
+            }
+
             Pemesanan::create([
-                'nama' => $request->nama,
-                'email' => $request->email,
+                'nama' => $request->nama_lengkap,
+                'email' => $user->email,
                 'no_hp' => $request->no_hp,
-                'tipe_paket' => $request->tipe_paket,
-                'tanggal_pelaksanaan' => $request->tanggal,
+                'tipe_paket' => $request->paket,
+                'tanggal_pelaksanaan' => $request->tgl_potret,
+                'metadata' => json_encode($validate),
                 'user_id' => auth()->user()->id 
             ]);
 
             DB::commit();
-            return back()->with('success', 'Berhasil memesan paket, admin akan segera mengeceknya');
+            return response()->json([
+                'type' => 'success',
+                'msg' => 'Pemesanan mu berhasil dikirim, admin akan segera mengeceknya, terimakasih!'
+            ]);
         }catch(\Exception $e){
             DB::rollback();
-            return back()->with('error', $e->getMessage());
+            return response()->json([
+                'type' => 'error',
+                'msg' => $e->getMessage()
+            ]);
         }
     }
 }
