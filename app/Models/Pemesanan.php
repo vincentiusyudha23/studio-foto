@@ -6,6 +6,7 @@ use App\Models\Foto;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -38,8 +39,8 @@ class Pemesanan extends Model
         return $this->created_at->format('dmy').'00'.$this->id;
     }
 
-    public function foto(): HasOne
+    public function foto(): HasMany
     {
-        return $this->hasOne(Foto::class, 'pesanan_id', 'id');
+        return $this->hasMany(Foto::class, 'pesanan_id', 'id');
     }
 }

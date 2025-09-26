@@ -5,8 +5,11 @@
 
     <ul class="dropdown-menu">
         <li>
-            <a class="dropdown-item" href="{{ route('admin.pemesanan-view', ['id' => $row->id]) }}">Lihat</a>
-            <a class="dropdown-item" href="#">Hapus</a>
+            <a class="dropdown-item" href="{{ route(route_prefix().'pemesanan-view', ['id' => $row->id]) }}">Lihat</a>
+            
+            @if (auth()->user()->hasRole('admin'))
+                <a class="dropdown-item" href="#">Hapus</a>
+            @endif
         </li>
     </ul>
 </div>

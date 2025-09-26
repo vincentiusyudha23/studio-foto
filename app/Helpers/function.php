@@ -23,3 +23,9 @@ function getMetodePembayaran($val){
         default => 'Cash'
     };
 }
+
+function route_prefix(){
+    $prefix = auth()->user()->hasRole('customer') ? 'customer.' : 'admin.';
+
+    return $prefix;
+}

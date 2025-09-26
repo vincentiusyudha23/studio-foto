@@ -9,16 +9,26 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 
 class PemesananTable extends DataTableComponent
 {
+    public ?int $userId = null;
+
+    public function mount($userId = null)
+    {
+        $this->userId = $userId;
+    }
+
     public function configure(): void
     {
         $this->setPrimaryKey('id')
+            ->setColumnSelectDisabled()
             ->setEmptyMessage('Tidak ada data')
             ->setSearchEnabled();
     }
 
     public function builder(): Builder
     {
-        return Pemesanan::query()->with('user')->latest();
+        return Pemesanan::query()
+            ->when($this->userId, fn($q) => $q->where('user_id', $this->userId))
+            ->with('user')->latest();
     }
 
     public function columns(): array
@@ -52,7 +62,7 @@ class PemesananTable extends DataTableComponent
             Column::make('Total Foto', 'id')
                 ->format(fn($val, $row, Column $column) => $row->foto()->count())
                 ->sortable(),
-            Column::make('Created At', 'created_at')
+            Column::make('Tanggal Pemesanan', 'created_at')
                 ->sortable(),
             Column::make('Aksi', 'id')
                 ->view('livewire.action.pemesanan-table-action')

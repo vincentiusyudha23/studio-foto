@@ -33,6 +33,11 @@ Route::controller(MainController::class)->group(function(){
     Route::post('/request-register', 'request_register_customer')->name('customer.request-register')->middleware('guest');
     Route::get('/pemesanan', 'pemesanan')->name('customer.pemesanan')->middleware('role:customer');
     Route::post('/store-pemesanan', 'store_pemesanan')->name('customer.pemesanan.store')->middleware('role:customer');
+    Route::get('/riwayat-pemesanan', 'riwayat_pemesanan')->name('customer.riwayat-pemesanan')->middleware('role:customer');
+    Route::get('/pemesanan/{id}', 'pemesanan_view')->name('customer.pemesanan-view')->middleware('role:customer');
+    Route::get('/pemesanan/{id}/lihat-foto', 'lihat_foto')->name('customer.lihat-foto')->middleware('role:customer');
+    Route::get('/galeri-saya', 'galeri_saya')->name('customer.galeri-saya')->middleware('role:customer');
+    Route::get('/download-foto/{id}', 'download_foto')->name('customer.download_foto')->middleware('role:customer');
 });
 
 Route::controller(AdminController::class)->prefix('admin')->name('admin.')->group(function(){

@@ -18,12 +18,14 @@
     </style>
 
     <div wire:loading.remove wire:target="loadImage">
-        <div class="d-flex justify-content-end px-1 mb-3">
-            <button class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-1" data-bs-toggle="modal" data-bs-target="#lp__upload-image">
-                <i class="las la-plus text-white fw-semibold fs-5"></i>
-                Tambah Foto
-            </button>
-        </div>
+        @if (auth()->user()->hasRole('admin'))
+            <div class="d-flex justify-content-end px-1 mb-3">
+                <button class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-1" data-bs-toggle="modal" data-bs-target="#lp__upload-image">
+                    <i class="las la-plus text-white fw-semibold fs-5"></i>
+                    Tambah Foto
+                </button>
+            </div>
+        @endif
 
         <div class="d-flex flex-wrap gap-3">
             @if (count($images ?? []) > 0)
@@ -43,7 +45,9 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ $image['image'] }}" target="_blank">Lihat</a></li>
                                     <li><a class="dropdown-item" href="#" wire:click.prevent="download({{ $image['id'] }})">Download</a></li>
-                                    <li><a class="dropdown-item" href="#" wire:click.prevent="deleteImage({{ $image['id'] }})">Hapus</a></li>
+                                    @if (auth()->user()->hasRole('admin'))
+                                        <li><a class="dropdown-item" href="#" wire:click.prevent="deleteImage({{ $image['id'] }})">Hapus</a></li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>

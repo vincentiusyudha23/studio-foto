@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Foto;
 use App\Models\User;
 use App\Models\Pemesanan;
 use Illuminate\Http\Request;
@@ -204,5 +205,52 @@ class MainController extends Controller
                 'msg' => $e->getMessage()
             ]);
         }
+    }
+
+    public function riwayat_pemesanan()
+    {
+        $user = auth()->user();
+        abort_if(!$user, 404);
+        $pemesanan = Pemesanan::where('user_id', $user->id)->latest()->get();
+
+        return view('customer.riwayat-pesan', compact('pemesanan'));
+    }
+
+    public function pemesanan_view($id)
+    {
+        $pemesanan = Pemesanan::where([
+            'user_id' => auth()->user()->id,
+            'id' => $id
+        ])->firstOrFail();
+
+        return view('customer.pemesanan-view', compact('pemesanan'));
+    }
+
+    public function lihat_foto($id)
+    {
+        $pemesanan = Pemesanan::where([
+            'user_id' => auth()->user()->id,
+            'id' => $id
+        ])->firstOrFail();
+
+        return view('customer.lihat-foto', compact('pemesanan'));
+    }
+
+    public function galeri_saya()
+    {
+        $pemesanan = Pemesanan::where('user_id', auth()->user()->id)->pluck('id')->toArray();
+
+        $galeri = Foto::whereIn('pesanan_id', $pemesanan)->latest()->get();
+        
+        return view('customer.galeri-saya', compact('pemesanan', 'galeri'));
+    }
+
+    public function download_foto($id)
+    {
+        $image = Foto::find($id);
+
+        return response()->streamDownload(function() use ($image){
+            echo file_get_contents($image->image);
+        }, $image->title);
     }
 }

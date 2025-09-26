@@ -191,6 +191,7 @@
 @endsection
 
 @section('scripts')
+    {{-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.0/dist/cdn.min.js"></script> --}}
     <script>
         const pesanForm = {
             nama_lengkap: null,
@@ -310,7 +311,6 @@
                     }
                 },
                 init(){
-                    
                 }
             }));
         });
