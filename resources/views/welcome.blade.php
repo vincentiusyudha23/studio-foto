@@ -170,17 +170,17 @@
         <div class="pricelist p-5" id="pricelist-section">
             <h2 class="text-white text-uppercase fw-bold text-center" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">PriceList</h2>
             <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 mt-5">
-                <a href="{{ route('details-pricelist') }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
+                <a href="{{ route('details-pricelist', ['type' => 'graduation']) }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
                     <div class="card-body text-center d-flex justify-content-center align-items-center">
                         <h3 class="text-white display-5">Graduation Photo & Video</h3>
                     </div>
                 </a>
-                <a href="{{ route('details-pricelist') }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
+                <a href="{{ route('details-pricelist', ['type' => 'undangan-digital']) }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
                     <div class="card-body text-center d-flex justify-content-center align-items-center">
                         <h3 class="text-white display-5">Undangan Digital</h3>
                     </div>
                 </a>
-                <a href="{{ route('details-pricelist') }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
+                <a href="{{ route('details-pricelist', ['type' => 'wedding']) }}" class="card text-decoration-none bg-transparent border border-2 border-white card-pricelist">
                     <div class="card-body text-center d-flex justify-content-center align-items-center">
                         <h3 class="text-white display-5">Wedding & Pre-wedding</h3>
                     </div>

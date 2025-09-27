@@ -77,4 +77,9 @@ class PemesananTable extends DataTableComponent
             
         ];
     }
+
+    public function delete($id)
+    {
+        Pemesanan::find($id)->delete();
+    }
 }

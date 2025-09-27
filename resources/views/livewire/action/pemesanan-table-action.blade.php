@@ -5,11 +5,18 @@
 
     <ul class="dropdown-menu">
         <li>
-            <a class="dropdown-item" href="{{ route(route_prefix().'pemesanan-view', ['id' => $row->id]) }}">Lihat</a>
-            
-            @if (auth()->user()->hasRole('admin'))
-                <a class="dropdown-item" href="#">Hapus</a>
-            @endif
+            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route(route_prefix().'pemesanan-view', ['id' => $row->id]) }}">
+                <i class="las la-eye"></i> Lihat
+            </a>
         </li>
+        @if (auth()->user()->hasRole('admin'))
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" wire:click.prevent="delete('{{ $row->id }}')">
+                    <i class="las la-trash"></i> Hapus
+                </a>
+            </li>
+        @endif
     </ul>
 </div>

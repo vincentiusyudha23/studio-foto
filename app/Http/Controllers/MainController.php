@@ -24,9 +24,435 @@ class MainController extends Controller
         return view('welcome', compact('photos', 'myGallery'));
     }
 
-    public function detail_pricelist()
+    public function detail_pricelist($type)
     {
-        return view('detail_pricelist');
+        if($type == 'graduation'){
+            $data = [
+                'title' => 'Graduation Photo & Video',
+                'type' => [
+                    'single' => [
+                        'basic' => [
+                            'title' => 'Basic Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 350k',
+                            'description' => [
+                                'Foto Outdoor (1 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi 50 menit + 10 menit',
+                                '20 Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'standard' => [
+                            'title' => 'Standard Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 450k',
+                            'description' => [
+                                'Foto Outdoor (1 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'premium' => [
+                            'title' => 'Premium Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 800k',
+                            'description' => [
+                                'Foto Outdoor (1 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Cetak Foto 16r + Bingkai (1pcs)</strong>',
+                                '<strong>Cetak Foto 12r + Bingkai (1pcs)</strong>',
+                                '<strong>Cetak Foto 4r (5pcs)</strong>',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ]
+                    ],
+                    'couple' => [
+                        'basic' => [
+                            'title' => 'Basic Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 400k',
+                            'description' => [
+                                'Foto Outdoor (2 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi 50 menit + 10 menit',
+                                '30 Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'standard' => [
+                            'title' => 'Standard Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 550k',
+                            'description' => [
+                                'Foto Outdoor (2 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'premium' => [
+                            'title' => 'Premium Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 1250k',
+                            'description' => [
+                                'Foto Outdoor (2 wisudawan/ti)',
+                                'Foto Pose, Keluarga, & Teman',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Cetak Foto 16r + Bingkai (1pcs)</strong>',
+                                '<strong>Cetak Foto 12r + Bingkai (1pcs)</strong>',
+                                '<strong>Cetak Foto 4r (5pcs)</strong>',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ]
+                    ],
+                    'group' => [
+                        'exclusive' => [
+                            'title' => 'Exclusive Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 150k / orang',
+                            'description' => [
+                                'Foto Outdoor (Pose & Group)',
+                                '3-5 wisudawan/ti',
+                                'Durasi 50 menit + 10 menit',
+                                '30 Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'dynamic' => [
+                            'title' => 'Dynamic Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 120k / orang',
+                            'description' => [
+                                'Foto Outdoor (Pose & Group)',
+                                'Min. 6-8 wisudawan/ti',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ],
+                        'energetic' => [
+                            'title' => 'Energetic Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 100k / orang',
+                            'description' => [
+                                'Foto Outdoor (Pose & Group)',
+                                'Min. 9-12 wisudawan/ti',
+                                'Durasi <strong>80 menit</strong> + 10 menit',
+                                '<strong>Unlimited</strong> Foto Edit',
+                                'Semua File Foto (Kirim Langsung)',
+                            ]
+                        ]
+                    ],
+                    'video' => [
+                        'single' => [
+                            'title' => 'Single Grads',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 500k',
+                            'description' => [
+                                'Video Cinematic 1-3 menit',
+                                'Pose sendiri & teman (diarahkan)',
+                                'Take Video 50 menit',
+                                'Take Foto 10 Menit',
+                            ]
+                        ],
+                        'couple' => [
+                            'title' => 'Couple Grads',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 500k',
+                            'description' => [
+                                'Video Cinematic 1-3 menit',
+                                'Pose sendiri & teman (diarahkan)',
+                                'Take Video 50 menit',
+                                'Take Foto 10 Menit',
+                                '<strong>2 wisudawan/ti</strong>',
+                            ]
+                        ],
+                        'group' => [
+                            'title' => 'Groups Grads',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 150k / orang',
+                            'description' => [
+                                'Video Cinematic 1-3 menit',
+                                'Pose sendiri & teman (diarahkan)',
+                                'Take Video 50 menit',
+                                '<strong>5-10 wisudawan/ti</strong>',
+                            ]
+                        ]
+                    ],
+                    'bundling' => [
+                        'bundling_1' => [
+                            'title' => 'Bundling I',
+                            'subtitle' => 'Foto + Video Wisuda',
+                            'price' => 'Rp 500k',
+                            'description' => [
+                                'Video Cinematic 1-3 menit',
+                                'Foto wisuda (60 minutes)',
+                                'Unlmited Photo & Edit',
+                                'Foto single pose, family & friends',
+                            ]
+                        ],
+                        'bundling_2' => [
+                            'title' => 'Bundling II',
+                            'subtitle' => 'Foto + Make-Up Wisuda',
+                            'price' => 'Rp 700k',
+                            'description' => [
+                                'Make-Up Wisuda (include softlens & Nail Extension)',
+                                'Graduation outdoor (60 minutes)',
+                                'Unlmited Photo & Edit',
+                                'Semua file foto (kirim sameday)',
+                                'Foto single pose, family & friends',
+                            ]
+                        ],
+                        'bundling_3' => [
+                            'title' => 'Bundling III',
+                            'subtitle' => 'Foto + Video + Make-Up Wisuda',
+                            'price' => 'Rp 1100k',
+                            'description' => [
+                                'Make-Up Wisuda (include softlens & Nail Extension)',
+                                'Video Cinematic 1-3 menit',
+                                'Foto Wisuda (60 minutes)',
+                                'Unlmited Photo & Edit',
+                                'Semua file foto (kirim sameday)',
+                                'Foto single pose, family & friends',
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        if($type == 'wedding'){
+            $data = [
+                'title' => 'Wedding & Pre-Wedding',
+                'type' => [
+                    'photography' => [
+                        'basic' => [
+                            'title' => 'Basic Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 1.7jt',
+                            'description' => [
+                                'Akad & Resepsi',
+                                'Foto Pajangan Eksklusif',
+                                'Album 20 Halaman + Foto 120pcs',
+                                'Undangan Digital',
+                                'Semua file foto (kirim langsung)',
+                            ]
+                        ],
+                        'standard' => [
+                            'title' => 'Standard Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 2.5jt',
+                            'description' => [
+                                '<strong>Pre-Wedding Photo Outdoor</strong>',
+                                'Akad, Resepsi & <strong>Babako</strong>',
+                                'Foto Pajangan Eksklusif <strong>(2pcs)</strong>',
+                                'Album 20 Halaman + Foto 120pcs',
+                                'Undangan Digital',
+                                'Semua file foto (kirim langsung)',
+                            ]
+                        ],
+                        'premium' => [
+                            'title' => 'Premium Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 4.2jt',
+                            'description' => [
+                                'Pre-Wedding Photo Outdoor',
+                                '<strong>Acara Double</strong> ditempat Wanita & Pria',
+                                'Akad, Resepsi & Babako',
+                                '<strong>Foto Latar Biru (Free Cetak 30pcs)</strong>',
+                                'Foto Pajangan Eksklusif <strong>(4pcs)</strong>',
+                                'Album + Foto <strong>(2set)</strong>',
+                                'Undangan Digital <strong>(2set)</strong>',
+                            ]
+                        ]
+                    ],
+                    'videography' => [
+                        'basic' => [
+                            'title' => 'Basic Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 1.3jt',
+                            'description' => [
+                                'Akad & Resepsi <strong>(oneday)</strong>',
+                                'Video Cinematic 3-5 menit',
+                                'Video Reels 30-60 detik (hari acara)',
+                                'Undangan Digital',
+                            ]
+                        ],
+                        'standard' => [
+                            'title' => 'Standard Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 2.5jt',
+                            'description' => [
+                                'Akad, Resepsi & <strong>Babako/Baarak</strong>',
+                                '<strong>Video Dokumentasi Acara 5-8 menit</strong>',
+                                'Video Cinematic 3-5 menit',
+                                'Video Reels 30-60 detik (hari acara)',
+                                'Undangan Digital',
+                            ]
+                        ],
+                        'premium' => [
+                            'title' => 'Premium Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 4jt',
+                            'description' => [
+                                'Akad, Resepsi, <strong>Babako/Baarak & Pre-Wedding</strong>',
+                                '<strong>Video Dokumentasi Acara 5-8 menit</strong>',
+                                'Video Cinematic <strong>Love Story</strong> 5-8 menit',
+                                '<strong>Camera Drone View</strong>',
+                                'Video Reels 30-60 detik (hari acara)',
+                                'Undangan Digital',
+                            ]
+                        ]
+                    ],
+                    'pre-wedding' => [
+                        'basic' => [
+                            'title' => 'Basic Package',
+                            'subtitle' => 'Ideal for Smart Budgeting',
+                            'price' => 'Rp 800k',
+                            'description' => [
+                                'Photo Pre-Wedding Outdoor <strong>(1 sesi)</strong>',
+                                '20 Foto Edit',
+                                'Semua File (Kirim Langsung)',
+                            ]
+                        ],
+                        'standard' => [
+                            'title' => 'Standard Package',
+                            'subtitle' => 'Perfect for Optimal Budgeting',
+                            'price' => 'Rp 1.5jt',
+                            'description' => [
+                                '<strong>Make-Up Pre-Wedding</strong>',
+                                'Photo Pre-Wedding Outdoor <strong>(Fullday)</strong>',
+                                '<strong>Foto Latar Biru (Free Cetak 30pcs)</strong>',
+                                '<strong>Cetak Foto + Bingkai (1pcs)</strong>',
+                                '<strong>Unlimited Foto Edit</strong>',
+                                'Semua File (Kirim Langsung)',
+                            ]
+                        ],
+                        'premium' => [
+                            'title' => 'Premium Package',
+                            'subtitle' => 'For a Seamless Experience and Luxury Wedding',
+                            'price' => 'Rp 5jt',
+                            'description' => [
+                                '<strong>MUA Pre-Wedding</strong>',
+                                '<strong>Costum Pre-Wedding (1set)</strong>',
+                                '<strong>Video Cinematic 3-5 menit</strong>',
+                                'Photo Pre-Wedding Outdoor <strong>(Fullday)</strong>',
+                                '<strong>Foto Latar Biru (Free Cetak 30pcs)</strong>',
+                                'Cetak Foto + Bingkai <strong>(2pcs)</strong>',
+                                '<strong>Unlimited Foto Edit</strong>',
+                                'Semua File (Kirim Langsung)',
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        if($type == 'undangan-digital'){
+            $data = [
+                'title' => 'Undangan Digital',
+                'type' => [
+                    'website_invitation' => [
+                        'web_1' => [
+                            'title' => 'Web Invitation I',
+                            'subtitle' => 'Normal desain for WEB digital invitation Wedding | Photo or non Photo',
+                            'price' => 'Rp 70k',
+                            'tema' => [
+                                'Floral',
+                                'Elegant',
+                                'Minimalis',
+                            ]
+                        ],
+                        'web_2' => [
+                            'title' => 'Web Invitation II',
+                            'subtitle' => 'Luxury desain for WEB digital invitation Wedding | Photo or non Photo',
+                            'price' => 'Rp 100k',
+                            'tema' => [
+                                'Islamic',
+                                'Traditional/Adat',
+                                'Overlay Shadow',
+                                'Luxury',
+                            ]
+                        ],
+                        'web_3' => [
+                            'title' => 'Web Invitation III',
+                            'subtitle' => 'Perfect desain for WEB digital invitation Wedding | Photo or non Photo',
+                            'price' => 'Rp 130k',
+                            'tema' => [
+                                'Engagement/Pertunangan',
+                                'Post Wedding',
+                                'Wedding Anniversary',
+                                'Birthday Party',
+                                'Aqiqah',
+                                'Khitanan',
+                                'Meeting Invitation',
+                                'Holiday',
+                                'Graduation',
+                                'Rehearsal Dinner',
+                                'Bachelorette',
+                                'Wedding Shower',
+                                'Baby Shower',
+                                'Baby Gender Reveal',
+                            ]
+                        ]
+                    ],
+                    'video_invitation' => [
+                        'video_1' => [
+                            'title' => 'Video Invitation I',
+                            'subtitle' => 'Normal desain for Video digital invitation',
+                            'price' => 'Rp 70k',
+                            'tema' => [
+                                'Floral',
+                                'Elegant',
+                                'Minimalis',
+                                'Islamic',
+                                'Traditional/Adat',
+                                'Overlay Shadow',
+                                'Luxury',
+                            ]
+                        ],
+                        'video_2' => [
+                            'title' => 'Video Invitation II',
+                            'subtitle' => 'Awesome desain for Video digital invitation with animation 2D/3D | Hijab or Non Hijab',
+                            'price' => 'Rp 150k',
+                            'tema' => [
+                                '<strong>Adat/Tradisional</strong> (Jawa Barat, DIY, Bali, Jawa Tengah, Sumatera Barat, Sumatera Selatan, Sulawesi Selatan, Bangka Belitung, Riau, Aceh)',
+                                '<strong>Casual Animation</strong>',
+                                '<strong>Profesi</strong> (Pilot, Polisi, TNI, TNI AL)',
+                            ]
+                        ]
+                    ],
+                    'invitation_design_(_undangan_cetak_)' => [
+                        'design' => [
+                            'title' => 'Design Invitation',
+                            'subtitle' => 'Beautiful desain for your Printed invitation',
+                            'price' => 'Rp 50k',
+                            'tema' => [
+                                'Floral',
+                                'Elegant',
+                                'Minimalis',
+                                'Islamic',
+                                'Traditional/Adat',
+                                'Luxury',
+                            ],
+                            'description' => [
+                                'Free Revisi 5x',
+                                'Resolusi Full HD (PNG, JPG or PDF file)'
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        return view('detail_pricelist', compact('data'));
     }
 
     public function login_customer()

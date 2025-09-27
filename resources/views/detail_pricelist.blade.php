@@ -2,7 +2,8 @@
 
 @section('style')
     <style>
-        .type-package-item{
+        /* Scoped CSS biar gak ngaruh ke halaman lain */
+        #pricelist-page .type-package-item {
             padding: 10px;
             border: 2px solid white;
             border-radius: 10px;
@@ -14,501 +15,115 @@
             background: white;
             transition: transform 0.3s ease;
         }
-        .type-package-item:hover{
+
+        #pricelist-page .type-package-item:hover {
             transform: scale(1.1);
             background: var(--bs-primary) !important;
             color: white;
         }
-        .type-package-item.active{
+
+        #pricelist-page .type-package-item.active {
             background: var(--bs-primary) !important;
-        }    
-    </style>    
+            color: white !important;
+        }
+
+        #pricelist-page .card {
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        #pricelist-page .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-pesan:hover{
+            color: var(--bs-primary);
+            background-color: white;
+            border: 5px solid var(--bs-primary);
+        }
+        .btn-pesan{
+            background-color: var(--bs-primary);
+            color: white;
+            border: 5px solid white;
+            border-radius: 15px !important;
+        }
+    </style>
 @endsection
 
 @section('content')
+<div id="pricelist-page">
     <div class="w-100 pt-2 text-center">
         <h4 class="badge text-primary bg-white fs-6">Pricelist</h4>
-        <h2 class="text-center">Graduation Photo & Video</h2>
+        <h2 class="text-center">{{ data_get($data, 'title') }}</h2>
 
         <ul class="w-100 d-flex justify-content-center align-items-center gap-3 flex-wrap mt-4 nav nav-pills" role="tablist" style="list-style: none;">
-            <li class="nav-item">
-                <button type="button" class="type-package-item fw-bold shadow-sm nav-link active" data-bs-toggle="pill" data-bs-target="#tab-single">SINGLE</button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="type-package-item fw-bold shadow-sm nav-link" data-bs-toggle="pill" data-bs-target="#tab-couple">COUPLE</button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="type-package-item fw-bold shadow-sm nav-link" data-bs-toggle="pill" data-bs-target="#tab-group">GROUP</button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="type-package-item fw-bold shadow-sm nav-link" data-bs-toggle="pill" data-bs-target="#tab-video">VIDEOGRAPHY</button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="type-package-item fw-bold shadow-sm nav-link" data-bs-toggle="pill" data-bs-target="#tab-bundling">BUNDLING</button>
-            </li>
+            @foreach ($data['type'] ?? [] as $key => $item)
+                <li class="nav-item">
+                    <button type="button" 
+                            class="type-package-item fw-bold shadow-sm nav-link {{ $loop->index == 0 ? 'active' : '' }} text-uppercase" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#tab-{{ $key }}">
+                        {{ str_replace(['_'], ' ', $key) }}
+                    </button>
+                </li>
+            @endforeach
         </ul>
 
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" role="tabpanel" id="tab-single">
-                <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Basic Package</h3>
-                            <p>Ideal for Smart Budgeting</p>
-    
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 350k</h3>
+            @foreach (array_keys($data['type']) as $type)
+                <div class="tab-pane fade {{ $loop->index == 0 ? 'show active' : '' }}" role="tabpanel" id="tab-{{ $type }}">
+                    <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
+                        @foreach ($data['type'][$type] as $item)
+                            <div class="card" style="width: 400px;">
+                                <div class="card-body text-start">
+                                    <h3 class="card-title m-0 p-0">{{ $item['title'] }}</h3>
+                                    <p>{{ $item['subtitle'] }}</p>
+            
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        @if (auth()->check())
+                                            <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
+                                        @else
+                                            <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
+                                        @endif
+                                        <div>
+                                            <span class="">Price</span>
+                                            <h3 class="fw-bold">{{ $item['price'] }}</h3>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    @if (!empty($item['tema']))
+                                        <h4 class="fw-bold fst-italic">Tema</h4>
+                                        <ul>
+                                            @foreach ($item['tema'] as $tema)
+                                                <li>{!! $tema !!}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                    
+                                    @if (!empty($item['description']))
+                                        <h4 class="fw-bold fst-italic">Included</h4>
+                                        <ul>
+                                            @foreach ($item['description'] as $desc)
+                                                <li>{!! $desc !!}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </div>
                             </div>
-    
-                            <hr>
-    
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (1 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi 50 menit + 10 menit</li>
-                                <li>20 Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Standard Package</h3>
-                            <p>Perfect for Optimal Budgeting</p>
-    
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 450k</h3>
-                                </div>
-                            </div>
-    
-                            <hr>
-    
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (1 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Premium Package</h3>
-                            <p>For a Seamless Experience and Luxury Wedding</p>
-    
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 800k</h3>
-                                </div>
-                            </div>
-    
-                            <hr>
-    
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (1 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li class="fw-bold">Cetak Foto 16r + Bingkai (1pcs)</li>
-                                <li class="fw-bold">Cetak Foto 12r + Bingkai (1pcs)</li>
-                                <li class="fw-bold">Cetak Foto 4r (5pcs)</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane fade" role="tabpanel" id="tab-couple">
-                <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Basic Package</h3>
-                            <p>Ideal for Smart Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 400k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (2 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi 50 menit + 10 menit</li>
-                                <li>30 Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Standard Package</h3>
-                            <p>Perfect for Optimal Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 550k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (2 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Premium Package</h3>
-                            <p>For a Seamless Experience and Luxury Wedding</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 1250k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (2 wisudawan/ti)</li>
-                                <li>Foto Pose, Keluarga, & Teman</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li class="fw-bold">Cetak Foto 16r + Bingkai (1pcs)</li>
-                                <li class="fw-bold">Cetak Foto 12r + Bingkai (1pcs)</li>
-                                <li class="fw-bold">Cetak Foto 4r (5pcs)</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" role="tabpanel" id="tab-group">
-                <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Exclusive Package</h3>
-                            <p>Ideal for Smart Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 150k / orang</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (Pose & Group)</li>
-                                <li>3-5 wisudawan/ti</li>
-                                <li>Durasi 50 menit + 10 menit</li>
-                                <li>30 Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Dynamic Package</h3>
-                            <p>Perfect for Optimal Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 120k / orang</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (Pose & Group)</li>
-                                <li>Min. 6-8 wisudawan/ti</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Energetic Package</h3>
-                            <p>For a Seamless Experience and Luxury Wedding</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 100k / orang</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Foto Outdoor (Pose & Group)</li>
-                                <li>Min. 9-12 wisudawan/ti</li>
-                                <li>Durasi <strong>80 menit</strong> + 10 menit</li>
-                                <li><strong>Unlimited</strong> Foto Edit</li>
-                                <li>Semua File Foto (Kirim Langsung)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" role="tabpanel" id="tab-video">
-                <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Single Grads</h3>
-                            <p>Ideal for Smart Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 500k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Video Cinematic 1-3 menit</li>
-                                <li>Pose sendiri & teman (diarahkan)</li>
-                                <li>Take Video 50 menit</li>
-                                <li>Take Foto 10 Menit</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Couple Grads</h3>
-                            <p>Perfect for Optimal Budgeting</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 500k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Video Cinematic 1-3 menit</li>
-                                <li>Pose sendiri & teman (diarahkan)</li>
-                                <li>Take Video 50 menit</li>
-                                <li>Take Foto 10 Menit</li>
-                                <li><strong>2 wisudawan/ti</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Groups Grads</h3>
-                            <p>For a Seamless Experience and Luxury Wedding</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 150k / orang</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Video Cinematic 1-3 menit</li>
-                                <li>Pose sendiri & teman (diarahkan)</li>
-                                <li>Take Video 50 menit</li>
-                                <li><strong>5-10 wisudawan/ti</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" role="tabpanel" id="tab-bundling">
-                <div class="d-flex flex-wrap justify-content-center align-items-stretch gap-3 py-3">
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Bundling I</h3>
-                            <p>Foto + Video Wisuda</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 500k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Video Cinematic 1-3 menit</li>
-                                <li>Foto wisuda (60 minutes)</li>
-                                <li>Unlmited Photo & Edit</li>
-                                <li>Foto single pose, family & friends</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Bundling II</h3>
-                            <p>Foto + Make-Up Wisuda</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 700k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Make-Up Wisuda (include softlens & Nail Extension)</li>
-                                <li>Graduation outdoor (60 minutes)</li>
-                                <li>Unlmited Photo & Edit</li>
-                                <li>Semua file foto (kirim sameday)</li>
-                                <li>Foto single pose, family & friends</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 400px;">
-                        <div class="card-body text-start">
-                            <h3 class="card-title m-0 p-0">Bundling III</h3>
-                            <p>Foto + Video + Make-Up Wisuda</p>
-        
-                            <div class="d-flex justify-content-between align-items-center">
-                                @if (auth()->check())
-                                    <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @else
-                                    <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
-                                @endif
-                                <div>
-                                    <span class="">Price</span>
-                                    <h3 class="fw-bold">Rp 1100k</h3>
-                                </div>
-                            </div>
-        
-                            <hr>
-        
-                            <h4 class="fw-bold fst-italic">Included</h4>
-                            <ul>
-                                <li>Make-Up Wisuda (include softlens & Nail Extension)</li>
-                                <li>Video Cinematic 1-3 menit</li>
-                                <li>Foto Wisuda (60 minutes)</li>
-                                <li>Unlmited Photo & Edit</li>
-                                <li>Semua file foto (kirim sameday)</li>
-                                <li>Foto single pose, family & friends</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
+
+        {{-- <div class="py-5 w-100 d-flex justify-content-center align-items-center">
+            <a class="btn w-50 py-2 fs-2 shadow fw-bold btn-pesan">
+                Pesan Sekarang
+            </a>
+        </div> --}}
 
         <div class="text-center mt-5 px-md-5">
             <h2>Terms & Condition</h2>
@@ -541,4 +156,5 @@
             </ul>
         </div>
     </div>
+</div>
 @endsection

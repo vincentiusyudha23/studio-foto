@@ -25,19 +25,23 @@ use App\Http\Controllers\AdminController;
 
 Route::controller(MainController::class)->group(function(){
     Route::get('/', 'landing_page')->name('landing-page');
-    Route::get('/details-pricelist', 'detail_pricelist')->name('details-pricelist');
+    Route::get('/details-pricelist/{type}', 'detail_pricelist')->name('details-pricelist');
     Route::get('/login', 'login_customer')->name('customer.login')->middleware('guest');
     Route::post('/request-login-customer', 'request_login_customer')->name('customer.login-request')->middleware('guest');
-    Route::post('/request-logout-customer', 'request_logout_customer')->name('customer.logout-request')->middleware('role:customer');
     Route::get('/register', 'register_customer')->name('customer.register')->middleware('guest');
     Route::post('/request-register', 'request_register_customer')->name('customer.request-register')->middleware('guest');
-    Route::get('/pemesanan', 'pemesanan')->name('customer.pemesanan')->middleware('role:customer');
-    Route::post('/store-pemesanan', 'store_pemesanan')->name('customer.pemesanan.store')->middleware('role:customer');
-    Route::get('/riwayat-pemesanan', 'riwayat_pemesanan')->name('customer.riwayat-pemesanan')->middleware('role:customer');
-    Route::get('/pemesanan/{id}', 'pemesanan_view')->name('customer.pemesanan-view')->middleware('role:customer');
-    Route::get('/pemesanan/{id}/lihat-foto', 'lihat_foto')->name('customer.lihat-foto')->middleware('role:customer');
-    Route::get('/galeri-saya', 'galeri_saya')->name('customer.galeri-saya')->middleware('role:customer');
-    Route::get('/download-foto/{id}', 'download_foto')->name('customer.download_foto')->middleware('role:customer');
+    
+
+    Route::middleware('role:customer')->group(function(){
+        Route::get('/pemesanan', 'pemesanan')->name('customer.pemesanan');
+        Route::get('/riwayat-pemesanan', 'riwayat_pemesanan')->name('customer.riwayat-pemesanan');
+        Route::get('/pemesanan/{id}', 'pemesanan_view')->name('customer.pemesanan-view');
+        Route::get('/pemesanan/{id}/lihat-foto', 'lihat_foto')->name('customer.lihat-foto');
+        Route::get('/galeri-saya', 'galeri_saya')->name('customer.galeri-saya');
+        Route::get('/download-foto/{id}', 'download_foto')->name('customer.download_foto');
+        Route::post('/store-pemesanan', 'store_pemesanan')->name('customer.pemesanan.store');
+        Route::post('/request-logout-customer', 'request_logout_customer')->name('customer.logout-request');
+    });
 });
 
 Route::controller(AdminController::class)->prefix('admin')->name('admin.')->group(function(){
