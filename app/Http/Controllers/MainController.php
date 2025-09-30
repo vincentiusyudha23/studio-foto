@@ -452,7 +452,9 @@ class MainController extends Controller
             ];
         }
 
-        return view('detail_pricelist', compact('data'));
+        $type_form = $type;
+
+        return view('detail_pricelist', compact('data', 'type_form'));
     }
 
     public function login_customer()
@@ -531,8 +533,11 @@ class MainController extends Controller
         }
     }
 
-    public function pemesanan()
+    public function pemesanan($type)
     {
+        
+        abort_if(!$type, 404);
+
         $description = '
             <p>Mohon untuk dibaca dan dipahami. jika ada yang kurang dipahami, silahkan hubungi admin.</p>
 
@@ -558,28 +563,67 @@ class MainController extends Controller
                 Contact us on : 0896 0806 9631 - Aster Visualism
             </p>
         ';
-        return view('customer.pemesanan', compact('description'));
+
+        if($type == 'wedding'){
+            $description = '
+                <p>Mohon untuk dibaca dan dipahami. jika ada yang kurang dipahami, silahkan hubungi admin.</p>
+
+                <ul>
+                    <li>Janji pertemuan secara langsung hanya dapat dilakukan setelah melakukan konfirmasi terlebih dahulu.</li>
+                    <li>Pembayaran dapat dilakukan melalui COD atau transfer atas nama yang diberikan oleh admin aster visualism.</li>
+                    <li>Penambahan lokasi, jam, dan wisudawan diluar perjanjian dikenakan biaya tambahan. info detail hubungi admin.</li>
+                    <li>Jika terdapat biaya pada lokasi pemotretan, maka biaya tersebut ditanggung oleh client.</li>
+                    <li>Booking = Pengisian form dan dengan pembayaran dp.</li>
+                    <li>Fase pembayaran terbagi, yaitu Booking 20%, Event 70%, dan Finishing 10%. </li>
+                    <li>Fase pembayaran Booking dilakukan minimal 20% atau 300rb.</li>
+                    <li>Fase pembayaran Event dilakukan maksimal sebelum sesi pemotretan dimulai. (saat kedatangan fg dilokasi acara)</li>
+                    <li>Fase pembayaran Finishing dilakukan saat penjemputan/pengantaran album foto.</li>
+                    <li>Pembatalan sepihak dari client tanpa alasan yang jelas akan di viralkan melalui media sosial kami dan client tidak berhak untuk menuntut kembali dalam bentuk apapun kepada pihak yang berwajib.</li>
+                    <li>Pembatalan sepihak dari client tanpa alasan yang jelas yang telah melakukan pembayaran tidak akan di viralkan namun dp hangus.</li>
+                    <li>Pembatalan dari client dengan alasan yang jelas hanya dapat dilakukan h-3 dari jadwal yang disepakati. (kecuali kematian, kecelakaan atau musibah besar)</li>
+                    <li>Pembatalan sepihak dari vendor dengan atau tanpa alasan yang jelas dp dikembalikan 2x lipat dan pihak yang dirugikan berhak mem-viralkan vendor. Vendor tidak berhak untuk menuntut kembali dalam bentuk apapun kepada pihak yang berwajib. (kecuali kematian, kecelakaan atau musibah besar)</li>
+                    <li>Pemotretan Pre-Wedding hanya berlaku outdoor.</li>
+                    <li>Info lainnya silahkan hubungi admin di nomor yang tertera.</li>
+                    <li>Booking = membaca, memahami seluruh s&k yang berlaku.</li>
+                </ul>
+
+                <p>
+                    Jangan lupa follow ig dan tiktok Aster Visualism di <strong>@aster.visualism</strong><br>
+                    Contact us on : 0896 0806 9631 - Aster Visualism
+                    <br><br>
+                    Best regard<br>
+                    ASTER VISUALISM 🌼 💞
+                </p>
+            ';
+            return view('customer.formulir.form-wedding', compact('description'));
+        }
+
+        return view('customer.formulir.form-wisuda', compact('description'));
     }
 
     public function store_pemesanan(Request $request)
     {
-        $validate = $request->validate([
-            'nama_lengkap' => 'required',
-            'no_hp' => 'required',
-            'instagram' => 'required',
-            'gelar' => 'nullable',
-            'univ' => 'required',
-            'tgl_potret' => 'required',
-            'jam_potret' => 'required',
-            'lokasi' => 'required',
-            'link_lokasi' => 'required',
-            'jasa_jasa' => 'required|array',
-            'paket' => 'required',
-            'info_paket_pilihan' => 'required',
-            'term_condition' => 'required',
-            'pembayaran' => 'required',
-            'bukti_tf' => 'required_if:pembayaran,1,2,3',
-        ]);
+        // $validate = $request->validate([
+        //     'nama_lengkap' => 'required',
+        //     'no_hp' => 'required',
+        //     'instagram' => 'required',
+        //     'gelar' => 'nullable',
+        //     'univ' => 'required',
+        //     'tgl_potret' => 'required',
+        //     'jam_potret' => 'required',
+        //     'lokasi' => 'required',
+        //     'link_lokasi' => 'required',
+        //     'jasa_jasa' => 'required|array',
+        //     'paket' => 'required',
+        //     'info_paket_pilihan' => 'required',
+        //     'term_condition' => 'required',
+        //     'pembayaran' => 'required',
+        //     'bukti_tf' => 'required_if:pembayaran,1,2,3',
+        // ]);
+
+        $validate = $request->all();
+
+        unset($validate['_token']);
 
         try{
             DB::beginTransaction();
@@ -596,11 +640,10 @@ class MainController extends Controller
             }
 
             Pemesanan::create([
-                'nama' => $request->nama_lengkap,
+                'nama' => $user->full_name,
                 'email' => $user->email,
-                'no_hp' => $request->no_hp,
+                'no_hp' => $request->no_hp ?? $request->whatsapp_pria ?? '0',
                 'tipe_paket' => $request->paket,
-                'tanggal_pelaksanaan' => $request->tgl_potret,
                 'metadata' => json_encode($validate),
                 'user_id' => auth()->user()->id 
             ]);

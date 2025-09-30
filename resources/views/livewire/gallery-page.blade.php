@@ -1,7 +1,7 @@
 <div class="w-100 card shadow-sm" x-data="landingPage">
     <style>
         #lp__upload-image .modal-body{
-            height: 60dvh; /* Diperkecil sedikit agar tombol tidak ketutup */
+            min-height: 60dvh; /* Diperkecil sedikit agar tombol tidak ketutup */
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -138,7 +138,7 @@
             }
             
             #lp__upload-image .modal-body {
-                height: 50dvh; /* Lebih kecil di mobile */
+                min-height: 50dvh; /* Lebih kecil di mobile */
                 padding: 1rem;
             }
         }

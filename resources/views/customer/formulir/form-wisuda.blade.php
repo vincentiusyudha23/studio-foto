@@ -281,8 +281,10 @@
                         }
 
                         if(this.dataForm.paket == 'lainnya'){
-                            formData.append('paket', this.paketLainnya);
+                            formData.append('paket_lainnya', this.paketLainnya);
                         }
+
+                        formData.append('paket', 'wisuda');
 
                         const response = await fetch('{{ route("customer.pemesanan.store") }}', {
                             method: 'POST',

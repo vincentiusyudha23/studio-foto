@@ -33,7 +33,7 @@ Route::controller(MainController::class)->group(function(){
     
 
     Route::middleware('role:customer')->group(function(){
-        Route::get('/pemesanan', 'pemesanan')->name('customer.pemesanan');
+        Route::get('/formulir/{type}', 'pemesanan')->name('customer.pemesanan');
         Route::get('/riwayat-pemesanan', 'riwayat_pemesanan')->name('customer.riwayat-pemesanan');
         Route::get('/pemesanan/{id}', 'pemesanan_view')->name('customer.pemesanan-view');
         Route::get('/pemesanan/{id}/lihat-foto', 'lihat_foto')->name('customer.lihat-foto');

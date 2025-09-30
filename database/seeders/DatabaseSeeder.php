@@ -33,5 +33,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $admin->assignRole('admin');
+
+        $user = User::factory()->create([
+            'nama_depan' => 'customer',
+            'nama_belakang' => 'test',
+            'email' => 'customer@test.com',
+            'role' => 'customer',
+            'password' => Hash::make('customer12345')
+        ]);
+
+        $user->assignRole('customer');
     }
 }

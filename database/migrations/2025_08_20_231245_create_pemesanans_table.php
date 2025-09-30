@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('no_hp');
             $table->string('email')->nullable();
             $table->string('tipe_paket');
-            $table->date('tanggal_pelaksanaan');
+            $table->date('tanggal_pelaksanaan')->nullable();
             $table->timestamps();
         });
     }

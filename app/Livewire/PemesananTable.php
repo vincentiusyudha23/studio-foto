@@ -50,19 +50,14 @@ class PemesananTable extends DataTableComponent
             Column::make('Nama Klien', 'id')
                 ->format(function($val, $row){
                     $data = Pemesanan::find($val);
-                    $metadata = json_decode($data->metadata, true);
-                    return data_get($metadata, 'nama_lengkap', $data->user->full_name);
+                    return $data->user->full_name;
                 })
                 ->sortable(),
-            Column::make('Tanggal Pemotretan', 'tanggal_pelaksanaan')
-                ->format(fn($val) => $val->format('d-m-Y'))
-                ->sortable(),
-            Column::make('Waktu Pemotretan', 'id')
+            Column::make('Tipe Order', 'tipe_paket')
                 ->format(function($val, $row, Column $column){
-                    $data = Pemesanan::find($val);
-                    $metadata = json_decode($data->metadata, true);
-                    return data_get($metadata, 'jam_potret');
-                }),
+                    return ucfirst($val);
+                })
+                ->sortable(),
             Column::make('Status', 'status')
                 ->format(fn($val) => getStatusEnum($val))
                 ->html()

@@ -82,7 +82,7 @@
             
                                     <div class="d-flex justify-content-between align-items-center">
                                         @if (auth()->check())
-                                            <a href="{{ route('customer.pemesanan') }}" class="btn btn-primary fw-semibold">Pesan</a>
+                                            <a href="{{ route('customer.pemesanan', ['type' => $type_form]) }}" class="btn btn-primary fw-semibold">Pesan</a>
                                         @else
                                             <a href="{{ route('customer.login') }}" class="btn btn-primary fw-semibold">Pesan</a>
                                         @endif
