@@ -22,7 +22,8 @@ class Pemesanan extends Model
         'tanggal_pelaksanaan',
         'user_id',
         'tipe_paket',
-        'metadata'
+        'metadata',
+        'status'
     ];
 
     protected $casts = [

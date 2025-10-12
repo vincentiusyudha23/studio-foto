@@ -30,7 +30,9 @@ Route::controller(MainController::class)->group(function(){
     Route::post('/request-login-customer', 'request_login_customer')->name('customer.login-request')->middleware('guest');
     Route::get('/register', 'register_customer')->name('customer.register')->middleware('guest');
     Route::post('/request-register', 'request_register_customer')->name('customer.request-register')->middleware('guest');
-    
+
+    Route::get('/galeri-umum/{id}', 'galeri_umum')->name('customer.galeri-umum');
+    Route::get('/download-foto-umum', 'download_foto_umum')->name('customer.galeri-umum.download');
 
     Route::middleware('role:customer')->group(function(){
         Route::get('/formulir/{type}', 'pemesanan')->name('customer.pemesanan');

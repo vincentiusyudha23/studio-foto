@@ -76,5 +76,18 @@ class PemesananTable extends DataTableComponent
     public function delete($id)
     {
         Pemesanan::find($id)->delete();
+
+        return;
+    }
+
+    public function update_status($id)
+    {
+        Pemesanan::find($id)->update([
+            'status' => 'selesai'
+        ]);
+
+        $this->js("
+            toastr.success('Berhasil Memperbarui status booking');
+        ");
     }
 }

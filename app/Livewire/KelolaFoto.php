@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\Foto;
 use Livewire\Component;
 use App\Models\Pemesanan;
+use Livewire\Attributes\On;
+use App\Models\QRCodeGaleri;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -14,6 +16,7 @@ class KelolaFoto extends Component
     public $pesanan_id;
     public $bookingId;
     public $images = [];
+    public $qrCode = null;
 
     protected $listeners = ['refreshImages' => '$refresh'];
 
@@ -21,6 +24,13 @@ class KelolaFoto extends Component
     {
         $this->pesanan_id = $pemesanan_id;
         $this->bookingId = $booking_id;
+        
+        $qrCode = QRCodeGaleri::where('pesanan_id', $this->pesanan_id)->first();
+
+        if($qrCode){
+            $this->qrCode = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={$qrCode->link}";
+        }
+
         $this->loadImage();
     }
 
@@ -101,6 +111,29 @@ class KelolaFoto extends Component
         return response()->streamDownload(function() use ($image){
             echo file_get_contents($image->image);
         }, $image->title);
+    }
+
+    #[On('generateQRCode')]
+    #[Renderless]
+    public function generateQRCode()
+    {
+        $data = QRCodeGaleri::updateOrCreate([
+            'pesanan_id' => $this->pesanan_id,
+        ], [
+            'pesanan_id' => $this->pesanan_id,
+            'link' => 'www',
+            'status' => 1,
+            'expired_at' => now()->addHours(24)
+        ]);
+
+        if($data){
+            $data->link = route('customer.galeri-umum', ['id' => $data->id]);
+            $data->save();
+        }
+
+        $qrCode = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={$data->link}";
+
+        $this->dispatch('off-generateQRCode', $qrCode);
     }
 
     public function placeholder()

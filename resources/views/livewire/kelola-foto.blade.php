@@ -167,10 +167,16 @@
         </div>
     </div>
     
-    <div class="card-header bg-white py-3">
+    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
         <h5 class="card-title mb-0 fw-semibold text-primary">
             <i class="las la-images me-2"></i>Kelola Foto Pesanan #{{ $bookingId ?? '' }}
         </h5>
+        @if (auth()->user()->hasRole('admin'))
+            <button type="button" data-bs-toggle="modal" data-bs-target="#modal-qr-code" class="btn btn-info d-flex align-items-center gap-1 text-light fw-semibold">
+                <i class="las la-qrcode"></i>
+                QR Code
+            </button>
+        @endif
     </div>
     
     <div class="card-body" wire:loading.remove wire:target="loadImage,deleteImage,download">
@@ -275,12 +281,139 @@
             </div>
         </div>
     </div>
+
+    @if (auth()->user()->hasRole('admin'))
+        <div class="modal fade" id="modal-qr-code" wire:ignore>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-light">
+                        <h5 class="text-primary fw-semibold modal-title d-flex align-items-center gap-2">
+                            <i class="las la-qrcode"></i> QR Code
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <template x-if="isLoadingQr">
+                            <div class="d-flex justify-content-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div x-show="!isLoadingQr">
+                            <template x-if="haveQrCode == null">
+                                <h5 class="w-100 py-5 d-flex text-muted flex-column gap-1 align-items-center justify-content-center">
+                                    <i class="las la-qrcode fs-1"></i>
+                                    QR Code Belum Dibuat
+                                </h5>
+                            </template>
+
+                            <template x-if="haveQrCode != null">
+                                <div class="d-flex justify-content-center align-items-center p-2">
+                                    <img :src="haveQrCode" alt="qrCode" x-ref="qrcode_img"/>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="row w-100">
+                            <button type="button" x-on:click="generateQRCode" class="btn btn-primary w-100 fw-semibold mb-2">
+                                Buat QR Code
+                            </button>
+                            <button type="button" x-on:click="downloadQR" :disabled="haveQrCode == null" class="btn btn-danger w-100 fw-semibold mb-2">
+                                Download
+                            </button>
+                            <button type="button" x-on:click="printQR" :disabled="haveQrCode == null" class="btn btn-success w-100 fw-semibold mb-2">
+                                Print
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 @script
     <script>
         Alpine.data('kelolaFoto', () => ({
             dropzoneTag: null,
+            isLoadingQr: false,
+            haveQrCode: $wire.entangle('qrCode'),
+            async downloadQR(){
+                const img = this.$refs.qrcode_img;
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'qrcode.png';
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+            },
+            async printQR() {
+                const img = this.$refs.qrcode_img;
+
+                if (!img || !img.src) {
+                    toastr.error('QR Code belum tersedia.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(img.src, { mode: 'cors' });
+                    if (!response.ok) throw new Error('Gagal mengambil gambar');
+                    const blob = await response.blob();
+
+                    const url = URL.createObjectURL(blob);
+
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>Print QR Code</title>
+                                <style>
+                                    body {
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        height: 100vh;
+                                        margin: 0;
+                                        background: #fff;
+                                    }
+                                    img {
+                                        width: 300px;
+                                        height: 300px;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <img src="${url}" alt="QR Code" />
+                                <script>
+                                    window.onload = function() {
+                                        window.print();
+                                        window.onafterprint = () => window.close();
+                                    }
+                                <\/script>
+                            </body>
+                        </html>
+                    `);
+
+                    printWindow.document.close();
+                } catch (error) {
+                    console.error('Gagal print QR:', error);
+                    toastr.error('Terjadi kesalahan saat mencetak QR');
+                }
+            },
+            generateQRCode(){
+                this.isLoadingQr = true;
+
+                $wire.dispatch('generateQRCode');
+            }, 
             async processUpload(){
                 if(this.dropzoneTag == null) return;
                 this.dropzoneTag.processQueue();
@@ -390,6 +523,17 @@
                 Dropzone.autoDiscover = false;
                 this.$nextTick(() => {
                     this.initializeDropzone();
+
+                    // Reset dropzone ketika modal ditutup
+                    document.getElementById('lp__upload-image').addEventListener('hidden.bs.modal', () => {
+                        if (this.dropzoneTag) {
+                            this.dropzoneTag.removeAllFiles(true);
+                            const dzMessage = document.querySelector('#dropzone__lp .dz-message');
+                            if (dzMessage) {
+                                dzMessage.classList.remove('d-none');
+                            }
+                        }
+                    });
                 });
 
                 Livewire.hook('commit', ({ component, commit, respond, succeed, fail}) => {
@@ -402,15 +546,11 @@
                     })
                 });
 
-                // Reset dropzone ketika modal ditutup
-                document.getElementById('lp__upload-image').addEventListener('hidden.bs.modal', () => {
-                    if (this.dropzoneTag) {
-                        this.dropzoneTag.removeAllFiles(true);
-                        const dzMessage = document.querySelector('#dropzone__lp .dz-message');
-                        if (dzMessage) {
-                            dzMessage.classList.remove('d-none');
-                        }
-                    }
+                
+
+                Livewire.on('off-generateQRCode', (data) => {
+                    this.isLoadingQr = false;
+                    this.haveQrCode = data;
                 });
             }
         }));

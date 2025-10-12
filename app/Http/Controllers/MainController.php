@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Pemesanan;
 use App\Models\GalleryPages;
 use App\Models\LandingPages;
+use App\Models\QRCodeGaleri;
 use Illuminate\Http\Request;
+use App\Models\DeviceCustomer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -700,6 +702,18 @@ class MainController extends Controller
         return view('customer.galeri-saya', compact('pemesanan', 'galeri'));
     }
 
+    public function galeri_umum($id)
+    {
+        $qrCodeData = QRCodeGaleri::findOrFail($id);
+
+        abort_if(now() >= $qrCodeData->expired_at || $qrCodeData->status == 0, 404);
+
+        $galeri = Foto::where('pesanan_id', $qrCodeData->pesanan_id)->latest()->get();
+        $pesanan_id = $qrCodeData->pesanan_id;
+
+        return view('customer.galeri-umum', compact('galeri', 'pesanan_id'));
+    }
+
     public function download_foto($id)
     {
         $image = Foto::find($id);
@@ -707,5 +721,53 @@ class MainController extends Controller
         return response()->streamDownload(function() use ($image){
             echo file_get_contents($image->image);
         }, $image->title);
+    }
+
+    public function download_foto_umum()
+    {
+        $device_id = $this->getDeviceHash();
+        $foto_id = request('foto_id', '');
+        $pesanan_id  = request('pesanan_id', '');
+        
+        if(empty($device_id) || empty($foto_id) || empty($pesanan_id)){
+            return back()->with('errors', 'Something Went Wrong!');
+        }
+
+        $device = DeviceCustomer::where(['device_id' => $device_id, 'pesanan_id' => $pesanan_id])->first();
+        
+        if($device){
+            $total_download = $device->count;
+            if($total_download >= 5){
+                return back()->with('errors', 'Mengunduh Foto sudah limit!');
+            }
+            $device->increment('count', 1);
+        }else{
+            $total_download = 0;
+            $device = DeviceCustomer::create([
+                'device_id' => $device_id,
+                'pesanan_id' => $pesanan_id,
+                'count' => $total_download
+            ]);
+
+            $device->increment('count', 1);
+        }
+
+        $image = Foto::where('id', $foto_id)->first();
+
+        return response()->streamDownload(function() use ($image){
+            echo file_get_contents($image->image);
+        }, $image->title);
+    }
+
+    private function getDeviceHash()
+    {
+        $userAgent = request()->header('User-Agent');
+        $acceptLang = request()->header('Accept-Language');
+        $acceptEnc = request()->header('Accept-Encoding');
+        $platform = php_uname('s') . php_uname('m');
+
+        $raw = "{$userAgent}|{$acceptLang}|{$acceptEnc}|{$platform}";
+
+        return hash('sha256', $raw);
     }
 }

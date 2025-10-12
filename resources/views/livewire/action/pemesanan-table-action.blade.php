@@ -9,6 +9,13 @@
                 <i class="las la-eye"></i> Lihat
             </a>
         </li>
+        @if (auth()->user()->hasRole('admin') && $row->status != 'selesai')  
+            <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 text-success" href="#" wire:click.prevent="update_status('{{ $row->id }}')">
+                    <i class="las la-check"></i> Selesai
+                </a>
+            </li>
+        @endif
         @if (auth()->user()->hasRole('admin'))
             <li><hr class="dropdown-divider"></li>
 
