@@ -45,7 +45,6 @@
             position: relative;
             width: 200px;
             height: 200px;
-            overflow: hidden;
             border-radius: 8px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -197,13 +196,15 @@
                 @foreach ($images as $image)
                     <div class="img-card m-1 shadow-sm border">
                         <a href="{{ data_get($image, 'image') ?? '#' }}" class="w-100 h-100 d-block" target="_blank">
-                            <img src="{{ getThumbnail(data_get($image, 'public_id')) }}" alt="image" loading="lazy">
+                            <img src="{{ getThumbnail(data_get($image, 'public_id')) }}" alt="image" class="rounded" loading="lazy">
                         </a>
 
                         <div class="w-100 img-title py-2 px-2">
-                            <span class="fw-medium" title="{{ data_get($image, 'title') ?? '' }}">{{ data_get($image, 'title') ?? 'Untitled' }}</span>
+                            <span class="fw-medium" title="{{ data_get($image, 'title') ?? '' }}">
+                                {{ data_get($image, 'title') ?? 'Untitled' }}  @if($image['edit']) <i class="las la-pen fs-5"></i> @endif
+                            </span>
 
-                            <div class="dropdown">
+                            <div class="dropstart">
                                 <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="las la-ellipsis-v fs-6"></i>
                                 </button>
@@ -218,6 +219,20 @@
                                             <i class="las la-download"></i> Download
                                         </a>
                                     </li>
+                                    @if (auth()->user()->hasRole('customer'))
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 text-info" href="#" data-fotoid="{{ $image['id'] }}" data-catatan="{{ $image['note'] }}" data-bs-toggle="modal" data-bs-target="#modal-edit-foto">
+                                                <i class="las la-edit"></i> Pilih Untuk di Edit
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if (auth()->user()->hasRole('admin') && !empty($image['note']))
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 text-info" href="#" data-bs-toggle="modal" data-bs-target="#modal-note-image-{{ $image['id'] }}">
+                                                <i class="las la-sticky-note"></i> Catatan
+                                            </a>
+                                        </li>
+                                    @endif
                                     @if (auth()->user()->hasRole('admin'))
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
@@ -227,6 +242,27 @@
                                         </li>
                                     @endif
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal-note-image-{{ $image['id'] }}" wire:ignore>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <h5 class="text-primary fw-semibold modal-title d-flex align-items-center gap-2">
+                                        Catatan Klient
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="mb-2">
+                                        <div class="form-group">
+                                            <textarea class="form-control" disabled>{!! data_get($image, 'note') !!}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -276,6 +312,36 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" x-ref="uploadBtn" x-on:click="processUpload" class="btn btn-primary d-flex align-items-center gap-2">
                         <i class="las la-upload"></i> Unggah
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-edit-foto" wire:ignore>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="text-primary fw-semibold modal-title d-flex align-items-center gap-2">
+                        Edit Foto ?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <h5 class="d-flex flex-column align-items-center text-primary justify-content-center pt-4 pb-2 gap-1">
+                        <i class="las la-question-circle" style="font-size: 50px;"></i>
+                        Anda ingin memilih foto ini untuk di edit?
+                    </h5>
+
+                    <div class="mb-4">
+                        <div class="form-group">
+                            <textarea class="form-control" id="catatan" x-model="catatanEdit" placeholder="Berikan catatan disini"></textarea>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" :disabled="isLoadingFotoEdit" x-on:click="handleEditFoto">
+                        Konfirmasi
                     </button>
                 </div>
             </div>
@@ -344,6 +410,13 @@
             isLoadingQr: false,
             haveQrCode: $wire.entangle('qrCode'),
             isAdmin: {{ (bool) auth()->user()->hasRole('admin') ? 'true' : 'false' }},
+            fotoIdEdit: null,
+            catatanEdit: null,
+            isLoadingFotoEdit: false,
+            handleEditFoto(){
+                this.isLoadingFotoEdit = true;
+                $wire.dispatch('requestEditFoto', { id : this.fotoIdEdit , catatan : this.catatanEdit });
+            },
             async downloadQR(){
                 const img = this.$refs.qrcode_img;
                 const response = await fetch(img.src);
@@ -537,6 +610,17 @@
                             }
                         });
                     }
+
+                    const $this = this;
+                    const editModal = document.getElementById('modal-edit-foto');
+                    editModal.addEventListener('shown.bs.modal', (event) => {
+                        const btn = event.relatedTarget;
+                        const fotoId = btn.getAttribute('data-fotoid');
+                        const catatan = btn.getAttribute('data-catatan');
+
+                        $this.fotoIdEdit = fotoId;
+                        $this.catatanEdit = catatan;
+                    });
                 });
 
                 Livewire.hook('commit', ({ component, commit, respond, succeed, fail}) => {
@@ -544,6 +628,17 @@
                         if(component.id === @this.__instance.id){
                             this.$nextTick(() => {
                                 this.initializeDropzone();
+
+                                const $this = this;
+                                const editModal = document.getElementById('modal-edit-foto');
+                                editModal.addEventListener('shown.bs.modal', (event) => {
+                                    const btn = event.relatedTarget;
+                                    const fotoId = btn.getAttribute('data-fotoid');
+                                    const catatan = btn.getAttribute('data-catatan');
+
+                                    $this.fotoIdEdit = fotoId;
+                                    $this.catatanEdit = catatan;
+                                });
                             });
                         }
                     })
@@ -554,6 +649,13 @@
                 Livewire.on('off-generateQRCode', (data) => {
                     this.isLoadingQr = false;
                     this.haveQrCode = data;
+                });
+
+                Livewire.on('requestEditDone', () => {
+                    if(this.isLoadingFotoEdit){
+                        toastr.success('Konfirmasi Pilihan Edit Foto Berhasil!');
+                    }
+                    this.isLoadingFotoEdit = false;
                 });
             }
         }));

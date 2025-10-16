@@ -136,6 +136,18 @@ class KelolaFoto extends Component
         $this->dispatch('off-generateQRCode', $qrCode);
     }
 
+    #[On('requestEditFoto')]
+    public function requestEditFoto($id, $catatan)
+    {
+        Foto::find($id)->update([
+            'edit' => true,
+            'note' => $catatan
+        ]);
+
+        $this->loadImage();
+        $this->dispatch('requestEditDone');
+    }
+
     public function placeholder()
     {
         return view('livewire.placeholder.skeleton');

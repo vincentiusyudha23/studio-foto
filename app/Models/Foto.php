@@ -10,5 +10,5 @@ class Foto extends Model
     use HasFactory;
 
     protected $table = 'fotos';
-    protected $fillable = ['pesanan_id', 'public_id', 'image', 'title'];
+    protected $fillable = ['pesanan_id', 'public_id', 'image', 'title', 'edit', 'note'];
 }
