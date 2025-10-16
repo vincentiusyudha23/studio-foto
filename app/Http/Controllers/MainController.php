@@ -537,7 +537,6 @@ class MainController extends Controller
 
     public function pemesanan($type)
     {
-        
         abort_if(!$type, 404);
 
         $description = '
@@ -566,7 +565,7 @@ class MainController extends Controller
             </p>
         ';
 
-        if($type == 'wedding'){
+        if($type == 'wedding' || $type == 'undangan-digital'){
             $description = '
                 <p>Mohon untuk dibaca dan dipahami. jika ada yang kurang dipahami, silahkan hubungi admin.</p>
 
