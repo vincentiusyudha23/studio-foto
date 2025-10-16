@@ -59,6 +59,7 @@ Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/landing-page', 'landing_page')->name('landing-page');
         Route::get('/galeri', 'galeri')->name('galeri');
         Route::get('/client', 'client')->name('client');
+        Route::get('/client/{id}', 'client_view')->name('client.view');
         Route::get('/pemesanan', 'pemesanan')->name('pemesanan');
         Route::get('/pemesanan/{id}', 'pemesanan_view')->name('pemesanan-view');
         Route::get('/pemesanan/{id}/kelola-foto', 'kelola_foto_pesanan')->name('pemesanan.kelola-foto');

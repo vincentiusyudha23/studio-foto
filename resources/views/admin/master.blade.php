@@ -34,6 +34,7 @@
                 background: white;
                 border-top-right-radius: 10px;
                 border-bottom-right-radius: 10px;
+                transition: transform 0.3s ease-in-out;
             }
 
             .main-container{
@@ -88,6 +89,37 @@
                 flex: 1 1 auto;
                 overflow-y: auto;
             }
+
+            @media (max-width: 768px) {
+                .sidebar-container {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 70%;
+                    max-width: 250px;
+                    height: 100vh;
+                    background: white;
+                    z-index: 1050;
+                    transform: translateX(-100%);
+                    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                }
+                .sidebar-container.active {
+                    transform: translateX(0);
+                }
+                .main-container {
+                    width: 100%;
+                }
+                body.sidebar-open::before {
+                    content: "";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.4);
+                    z-index: 1040;
+                }
+            }
         </style>
         @yield('style')
     </head>
@@ -128,7 +160,12 @@
         </div>
         <div class="main-container">
             <div class="navbar d-flex justify-content-between align-items-center p-3">
-                <h5 class="text-primary m-0 p-0">@yield('title')</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-primary d-md-none" id="toggleSidebar">
+                        <i class="las la-bars fs-4"></i>
+                    </button>
+                    <h5 class="text-primary m-0 p-0">@yield('title')</h5>
+                </div>
                 <div>
                     <form action="{{ route('admin.logout') }}" method="POST">
                         @csrf
@@ -150,5 +187,28 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         
         @yield('scripts')
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const sidebar = document.querySelector('.sidebar-container');
+                const toggleBtn = document.querySelector('#toggleSidebar');
+
+                toggleBtn?.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    document.body.classList.toggle('sidebar-open');
+                });
+
+                // Klik di luar sidebar untuk menutup (hanya di mobile)
+                document.body.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                            sidebar.classList.remove('active');
+                            document.body.classList.remove('sidebar-open');
+                        }
+                    }
+                });
+            });
+        </script>
+
     </body>
 </html>

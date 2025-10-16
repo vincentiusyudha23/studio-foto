@@ -160,7 +160,7 @@
                                 </select>
                             </div>
 
-                            <div class="mb-2">
+                            <div class="mb-2" x-show="dataForm.pembayaran != 4">
                                 <label class="form-label" for="bukti_tf">Bukti Transfer</label>
                                 <div class="form-group">
                                     <input class="form-control" @change="handleBuktiTransfer" type="file" accept="image/*,application/pdf" name="bukti_tf" id="bukti_tf">
@@ -170,7 +170,7 @@
                     </div>
 
                     <template x-if="stepForm > 5">
-                        <button x-on:click="submit" :disabled="isLoading" class="w-100 btn btn-primary mb-2 fw-semibold" type="button">
+                        <button x-on:click="submit" :disabled="isLoading || (dataForm.pembayaran != 4 && bukti_tf == null)" class="w-100 btn btn-primary mb-2 fw-semibold" type="button">
                             <i class="las la-spinner la-spin" x-show="isLoading"></i>
                             Konfirmasi
                         </button>

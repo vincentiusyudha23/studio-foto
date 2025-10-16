@@ -174,7 +174,7 @@
         @if (auth()->user()->hasRole('admin'))
             <button type="button" data-bs-toggle="modal" data-bs-target="#modal-qr-code" class="btn btn-info d-flex align-items-center gap-1 text-light fw-semibold">
                 <i class="las la-qrcode"></i>
-                QR Code
+                QR
             </button>
         @endif
     </div>
@@ -306,7 +306,7 @@
                             <template x-if="haveQrCode == null">
                                 <h5 class="w-100 py-5 d-flex text-muted flex-column gap-1 align-items-center justify-content-center">
                                     <i class="las la-qrcode fs-1"></i>
-                                    QR Code Belum Dibuat
+                                    QR Belum Dibuat
                                 </h5>
                             </template>
 
@@ -343,6 +343,7 @@
             dropzoneTag: null,
             isLoadingQr: false,
             haveQrCode: $wire.entangle('qrCode'),
+            isAdmin: {{ (bool) auth()->user()->hasRole('admin') ? 'true' : 'false' }},
             async downloadQR(){
                 const img = this.$refs.qrcode_img;
                 const response = await fetch(img.src);
@@ -522,18 +523,20 @@
             init(){
                 Dropzone.autoDiscover = false;
                 this.$nextTick(() => {
-                    this.initializeDropzone();
-
-                    // Reset dropzone ketika modal ditutup
-                    document.getElementById('lp__upload-image').addEventListener('hidden.bs.modal', () => {
-                        if (this.dropzoneTag) {
-                            this.dropzoneTag.removeAllFiles(true);
-                            const dzMessage = document.querySelector('#dropzone__lp .dz-message');
-                            if (dzMessage) {
-                                dzMessage.classList.remove('d-none');
+                    if(this.isAdmin){
+                        this.initializeDropzone();
+    
+                        // Reset dropzone ketika modal ditutup
+                        document.getElementById('lp__upload-image').addEventListener('hidden.bs.modal', () => {
+                            if (this.dropzoneTag) {
+                                this.dropzoneTag.removeAllFiles(true);
+                                const dzMessage = document.querySelector('#dropzone__lp .dz-message');
+                                if (dzMessage) {
+                                    dzMessage.classList.remove('d-none');
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 });
 
                 Livewire.hook('commit', ({ component, commit, respond, succeed, fail}) => {

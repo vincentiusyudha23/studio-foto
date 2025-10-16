@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Foto;
+use App\Models\User;
 use App\Models\Pemesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,5 +92,14 @@ class AdminController extends Controller
         $pemesanan = Pemesanan::findOrFail($id);
 
         return view('admin.pemesanan.kelola-foto', compact('pemesanan'));
+    }
+
+    public function client_view($id)
+    {
+        $user = User::find($id);
+
+        $total_foto = Foto::whereIn('pesanan_id', $user->pemesanan()->pluck('id')->toArray())->count();
+
+        return view('admin.client.client-view', compact('user', 'total_foto'));
     }
 }
